@@ -3,7 +3,7 @@ package testutil
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/jjjjpppp/quoinex-go-client/v2/models"
+	"github.com/sho3imo/quoinex-go-client/v2/models"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
