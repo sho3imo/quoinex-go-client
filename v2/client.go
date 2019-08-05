@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
-	"github.com/jjjjpppp/quoinex-go-client/v2/models"
+	"github.com/sho3imo/quoinex-go-client/v2/models"
 	"io"
 	"io/ioutil"
 	"log"

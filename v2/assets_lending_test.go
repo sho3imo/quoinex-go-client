@@ -3,8 +3,8 @@ package quoinex
 import (
 	"context"
 	"github.com/google/go-cmp/cmp"
-	"github.com/jjjjpppp/quoinex-go-client/v2/models"
-	"github.com/jjjjpppp/quoinex-go-client/v2/testutil"
+	"github.com/sho3imo/quoinex-go-client/v2/models"
+	"github.com/sho3imo/quoinex-go-client/v2/testutil"
 	"testing"
 	"time"
 )
