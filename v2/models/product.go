@@ -23,5 +23,5 @@ type Product struct {
 	LastTradedQuantity  string `json:"last_traded_quantity"`
 	QuotedCurrency      string `json:"quoted_currency"`
 	BaseCurrency        string `json:"base_currency"`
-	ExchangeRate        string `json:"exchange_rate"`
+	ExchangeRate        int    `json:"exchange_rate"`
 }
