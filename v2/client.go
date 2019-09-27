@@ -147,9 +147,10 @@ func (c *Client) newRequest(ctx context.Context, method, spath string, body io.R
 		u.RawQuery = q.Encode()
 	}
 
+
 	userAgent := fmt.Sprintf("GoClient/%s (%s)", version, runtime.Version())
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"path":     spath,
+		"path":     fmt.Sprintf("%s?%s", spath, u.RawQuery),
 		"nonce":    time.Now().Unix(),
 		"token_id": c.ApiTokenID,
 	})
