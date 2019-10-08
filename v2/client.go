@@ -18,7 +18,7 @@ import (
 )
 
 const (
-	baseUrl string = "https://api.quoine.com"
+	baseUrl string = "https://api.liquid.com"
 	version string = "0.0.1"
 )
 
@@ -147,10 +147,12 @@ func (c *Client) newRequest(ctx context.Context, method, spath string, body io.R
 		u.RawQuery = q.Encode()
 	}
 
-
 	userAgent := fmt.Sprintf("GoClient/%s (%s)", version, runtime.Version())
+	if u.RawQuery != "" {
+		spath = fmt.Sprintf("%s?%s", spath, u.RawQuery)
+	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"path":     fmt.Sprintf("%s?%s", spath, u.RawQuery),
+		"path":     spath,
 		"nonce":    time.Now().Unix(),
 		"token_id": c.ApiTokenID,
 	})
