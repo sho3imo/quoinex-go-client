@@ -142,7 +142,9 @@ func (c *Client) newRequest(ctx context.Context, method, spath string, body io.R
 	if queryParam != nil {
 		q := u.Query()
 		for k, v := range *queryParam {
-			q.Set(k, v)
+			if v != "" {
+				q.Set(k, v)
+			}
 		}
 		u.RawQuery = q.Encode()
 	}
