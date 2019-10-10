@@ -3,9 +3,10 @@ package quoinex
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
-	"github.com/jjjjpppp/quoinex-go-client/v2/models"
+	"github.com/sho3imo/quoinex-go-client/v2/models"
 	"io"
 	"io/ioutil"
 	"log"
@@ -18,7 +19,7 @@ import (
 )
 
 const (
-	baseUrl string = "https://api.quoine.com"
+	baseUrl string = "https://api.liquid.com"
 	version string = "0.0.1"
 )
 
@@ -30,6 +31,8 @@ type Client struct {
 	Logger     *log.Logger
 	testServer *httptest.Server
 }
+
+var LiquidAlreadyExistError = errors.New(`{"errors":{"client_order_id":["exists"]}}`)
 
 func NewClient(apiTokenID string, apiSecret string, logger *log.Logger) (*Client, error) {
 	if len(apiTokenID) == 0 {
@@ -142,12 +145,17 @@ func (c *Client) newRequest(ctx context.Context, method, spath string, body io.R
 	if queryParam != nil {
 		q := u.Query()
 		for k, v := range *queryParam {
-			q.Set(k, v)
+			if v != "" {
+				q.Set(k, v)
+			}
 		}
 		u.RawQuery = q.Encode()
 	}
 
 	userAgent := fmt.Sprintf("GoClient/%s (%s)", version, runtime.Version())
+	if u.RawQuery != "" {
+		spath = fmt.Sprintf("%s?%s", spath, u.RawQuery)
+	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"path":     spath,
 		"nonce":    time.Now().Unix(),
@@ -189,8 +197,17 @@ func (c *Client) sendRequest(ctx context.Context, method, spath string, body io.
 	}
 
 	if res.StatusCode != 200 {
-		c.Logger.Printf("err: %#v \n", err)
-		return nil, fmt.Errorf("faild to get data. status: %s", res.Status)
+		defer res.Body.Close()
+		bytes, err := ioutil.ReadAll(res.Body)
+		if err != nil {
+			return nil, err
+		}
+		b := string(bytes)
+		if b == (`{"errors":{"client_order_id":["exists"]}}`) {
+			return nil, LiquidAlreadyExistError
+		} else {
+			return nil, errors.New(b)
+		}
 	}
 	return res, nil
 }
